@@ -1,5 +1,5 @@
 import { getUserIDs, getListenEvents, getSong } from "./data.js";
-import { getSongCounts, getArtistCounts,getMostPlayed} from "./reportUtils.js";
+import { getSongCounts, getArtistCounts, getMostPlayed, getFridayNightSongStats, getLongestStreakSong } from "./reportUtils.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     const userSelect = document.getElementById("userDropdown");
@@ -41,23 +41,33 @@ document.addEventListener("DOMContentLoaded", () => {
     async function generateReport(listenEvents) {
         const songCounts = getSongCounts(listenEvents);  
         const artistCounts = await getArtistCounts(listenEvents);  
-    
+        
         const mostListenedSongID = getMostPlayed(songCounts, "count");  
         const mostListenedSongByTimeID = getMostPlayed(songCounts, "duration");  
         const mostListenedArtistID = getMostPlayed(artistCounts, "count");  
-        const mostListenedArtistByTimeID = getMostPlayed(artistCounts, "duration");  
+        const mostListenedArtistByTimeID = getMostPlayed(artistCounts, "duration");
+    
+        // Get Friday night song stats
+        const fridayNightStats = getFridayNightSongStats(listenEvents);
+
+        // Get longest streak song
+        const longestStreak = getLongestStreakSong(listenEvents);
     
         return {
             mostListenedSong: mostListenedSongID ? await getSong(mostListenedSongID) : null,
             mostListenedSongByTime: mostListenedSongByTimeID ? await getSong(mostListenedSongByTimeID) : null,
             mostListenedArtist: mostListenedArtistID,
             mostListenedArtistByTime: mostListenedArtistByTimeID,
+            fridayNightSongByCount: fridayNightStats.songByCount ? await getSong(fridayNightStats.songByCount) : null,
+            fridayNightSongByTime: fridayNightStats.songByTime ? await getSong(fridayNightStats.songByTime) : null,
+            longestStreakSong: longestStreak ? longestStreak.song : null,
+            longestStreak: longestStreak ? longestStreak.streak : 0
         };
     }
     
     function displayResults(report) {
         resultsContainer.innerHTML = "";
-
+    
         if (report.mostListenedSong) {
             resultsContainer.innerHTML += `<p>Most listened song (count): ${report.mostListenedSong.title}</p>`;
         }
@@ -70,5 +80,14 @@ document.addEventListener("DOMContentLoaded", () => {
         if (report.mostListenedArtistByTime) {
             resultsContainer.innerHTML += `<p>Most listened artist (time): ${report.mostListenedArtistByTime}</p>`;
         }
-    }
+        if (report.fridayNightSongByCount) {
+            resultsContainer.innerHTML += `<p>Most listened song on Friday night (count): ${report.fridayNightSongByCount.title}</p>`;
+        }
+        if (report.fridayNightSongByTime) {
+            resultsContainer.innerHTML += `<p>Most listened song on Friday night (time): ${report.fridayNightSongByTime.title}</p>`;
+        }
+        if (report.longestStreakSong) {
+            resultsContainer.innerHTML += `<p>Longest streak song: ${report.longestStreakSong.title} - ${report.longestStreak} times in a row.</p>`;
+        }
+    }   
 });
