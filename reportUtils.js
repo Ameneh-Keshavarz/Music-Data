@@ -14,7 +14,7 @@ export function getSongCounts(listenEvents) {
 export async function getArtistCounts(listenEvents) {
     const counts = {};
     for (const event of listenEvents) {
-        const song = await getSong(event.song_id);
+        const song = getSong(event.song_id);
         if (song && song.artist) {
             if (!counts[song.artist]) counts[song.artist] = { count: 0, duration: 0 };
             counts[song.artist].count++;
@@ -62,7 +62,7 @@ export function getLongestStreakSong(listenEvents) {
 
     let maxStreak = 0;
     let currentStreak = 1;
-    let longestSongID = listenEvents[0].song_id;
+    let longestSongs = [];
     let currentSongID = listenEvents[0].song_id;
 
     for (let i = 1; i < listenEvents.length; i++) {
@@ -71,7 +71,9 @@ export function getLongestStreakSong(listenEvents) {
         } else {
             if (currentStreak > maxStreak) {
                 maxStreak = currentStreak;
-                longestSongID = currentSongID;
+                longestSongs = [currentSongID]; 
+            } else if (currentStreak === maxStreak) {
+                longestSongs.push(currentSongID); 
             }
             currentSongID = listenEvents[i].song_id;
             currentStreak = 1;
@@ -80,11 +82,13 @@ export function getLongestStreakSong(listenEvents) {
 
     if (currentStreak > maxStreak) {
         maxStreak = currentStreak;
-        longestSongID = currentSongID;
+        longestSongs = [currentSongID];
+    } else if (currentStreak === maxStreak) {
+        longestSongs.push(currentSongID);
     }
 
-    const song = getSong(longestSongID);
-    return { song, streak: maxStreak };
+    const songs = longestSongs.map(songID => getSong(songID)); 
+    return { songs, streak: maxStreak };
 }
 
 export function getSongsListenedEveryDay(listenEvents, songsData) {
@@ -119,7 +123,6 @@ export function getSongsListenedEveryDay(listenEvents, songsData) {
 
     return songsListenedEveryDay;
 }
-
 
 export function getTopGenresByListenCount(listenEvents) {
     const genreCounts = {};
