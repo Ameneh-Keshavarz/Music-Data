@@ -87,6 +87,51 @@ export function getLongestStreakSong(listenEvents) {
     return { song, streak: maxStreak };
 }
 
+export function getSongsListenedEveryDay(listenEvents) {
+    if (listenEvents.length === 0) return [];
+
+    listenEvents.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+    const firstDay = new Date(listenEvents[0].timestamp).setHours(0, 0, 0, 0);
+    const lastDay = new Date(listenEvents[listenEvents.length - 1].timestamp).setHours(0, 0, 0, 0);
+    
+    const songDays = {};
+
+    listenEvents.forEach(event => {
+        const songID = event.song_id;
+        const eventDate = new Date(event.timestamp).setHours(0, 0, 0, 0); 
+
+        if (!songDays[songID]) songDays[songID] = new Set();
+        songDays[songID].add(eventDate);
+    });
+
+    const daysCount = Math.floor((lastDay - firstDay) / (1000 * 60 * 60 * 24)) + 1;
+
+    const songsListenedEveryDay = Object.keys(songDays).filter(songID => songDays[songID].size === daysCount);
+
+    return songsListenedEveryDay;
+}
+
+export function getTopGenresByListenCount(listenEvents) {
+    const genreCounts = {};
+
+    listenEvents.forEach(event => {
+        const song = getSong(event.song_id);
+        if (song && song.genre) {
+            const genre = song.genre;
+            if (!genreCounts[genre]) genreCounts[genre] = 0;
+            genreCounts[genre]++;
+        }
+    });
+
+    const sortedGenres = Object.entries(genreCounts)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3);
+
+    return sortedGenres.map(entry => entry[0]); 
+}
+
+
 
 
 

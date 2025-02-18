@@ -1,5 +1,5 @@
 import { getUserIDs, getListenEvents, getSong } from "./data.js";
-import { getSongCounts, getArtistCounts, getMostPlayed, getFridayNightSongStats, getLongestStreakSong } from "./reportUtils.js";
+import { getSongCounts, getArtistCounts, getMostPlayed, getFridayNightSongStats, getLongestStreakSong,getSongsListenedEveryDay,getTopGenresByListenCount } from "./reportUtils.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     const userSelect = document.getElementById("userDropdown");
@@ -37,21 +37,18 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         
     });
-
     async function generateReport(listenEvents) {
-        const songCounts = getSongCounts(listenEvents);  
-        const artistCounts = await getArtistCounts(listenEvents);  
-        
-        const mostListenedSongID = getMostPlayed(songCounts, "count");  
-        const mostListenedSongByTimeID = getMostPlayed(songCounts, "duration");  
-        const mostListenedArtistID = getMostPlayed(artistCounts, "count");  
+        const songCounts = getSongCounts(listenEvents);
+        const artistCounts = await getArtistCounts(listenEvents);
+    
+        const mostListenedSongID = getMostPlayed(songCounts, "count");
+        const mostListenedSongByTimeID = getMostPlayed(songCounts, "duration");
+        const mostListenedArtistID = getMostPlayed(artistCounts, "count");
         const mostListenedArtistByTimeID = getMostPlayed(artistCounts, "duration");
     
-        // Get Friday night song stats
         const fridayNightStats = getFridayNightSongStats(listenEvents);
-
-        // Get longest streak song
         const longestStreak = getLongestStreakSong(listenEvents);
+        const topGenres = getTopGenresByListenCount(listenEvents); 
     
         return {
             mostListenedSong: mostListenedSongID ? await getSong(mostListenedSongID) : null,
@@ -61,7 +58,9 @@ document.addEventListener("DOMContentLoaded", () => {
             fridayNightSongByCount: fridayNightStats.songByCount ? await getSong(fridayNightStats.songByCount) : null,
             fridayNightSongByTime: fridayNightStats.songByTime ? await getSong(fridayNightStats.songByTime) : null,
             longestStreakSong: longestStreak ? longestStreak.song : null,
-            longestStreak: longestStreak ? longestStreak.streak : 0
+            longestStreak: longestStreak ? longestStreak.streak : 0,
+            songsListenedEveryDay: getSongsListenedEveryDay(listenEvents),
+            topGenres: topGenres,
         };
     }
     
@@ -89,5 +88,13 @@ document.addEventListener("DOMContentLoaded", () => {
         if (report.longestStreakSong) {
             resultsContainer.innerHTML += `<p>Longest streak song: ${report.longestStreakSong.title} - ${report.longestStreak} times in a row.</p>`;
         }
-    }   
+        if (report.songsListenedEveryDay.length !== 0) {
+            resultsContainer.innerHTML += `<p>Songs listened to every day: ${report.songsListenedEveryDay.join(", ")}</p>`;
+        }
+        if (report.topGenres.length > 0) {
+            const topGenresText = report.topGenres.length === 1 ? "Top genre" : `Top ${report.topGenres.length} genres`;
+            resultsContainer.innerHTML += `<p>${topGenresText}: ${report.topGenres.join(", ")}</p>`;
+        }
+    }
+    
 });
