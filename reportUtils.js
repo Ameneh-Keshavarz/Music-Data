@@ -87,7 +87,7 @@ export function getLongestStreakSong(listenEvents) {
     return { song, streak: maxStreak };
 }
 
-export function getSongsListenedEveryDay(listenEvents) {
+export function getSongsListenedEveryDay(listenEvents, songsData) {
     if (listenEvents.length === 0) return [];
 
     listenEvents.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
@@ -107,10 +107,19 @@ export function getSongsListenedEveryDay(listenEvents) {
 
     const daysCount = Math.floor((lastDay - firstDay) / (1000 * 60 * 60 * 24)) + 1;
 
-    const songsListenedEveryDay = Object.keys(songDays).filter(songID => songDays[songID].size === daysCount);
+    const songsListenedEveryDay = Object.keys(songDays)
+        .filter(songID => songDays[songID].size === daysCount)
+        .map(songID => {
+            const song = songsData[songID];
+            return {
+                title: song.title,
+                artist: song.artist,
+            };
+        });
 
     return songsListenedEveryDay;
 }
+
 
 export function getTopGenresByListenCount(listenEvents) {
     const genreCounts = {};

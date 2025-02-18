@@ -37,9 +37,19 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         
     });
+    
     async function generateReport(listenEvents) {
         const songCounts = getSongCounts(listenEvents);
         const artistCounts = await getArtistCounts(listenEvents);
+        
+        const songsData = {};
+        
+        for (const event of listenEvents) {
+            const song = await getSong(event.song_id); 
+            if (song) {
+                songsData[song.id] = song; 
+            }
+        }
     
         const mostListenedSongID = getMostPlayed(songCounts, "count");
         const mostListenedSongByTimeID = getMostPlayed(songCounts, "duration");
@@ -48,7 +58,8 @@ document.addEventListener("DOMContentLoaded", () => {
     
         const fridayNightStats = getFridayNightSongStats(listenEvents);
         const longestStreak = getLongestStreakSong(listenEvents);
-        const topGenres = getTopGenresByListenCount(listenEvents); 
+        const songsListenedEveryDay = getSongsListenedEveryDay(listenEvents, songsData);
+        const topGenres = getTopGenresByListenCount(listenEvents);
     
         return {
             mostListenedSong: mostListenedSongID ? await getSong(mostListenedSongID) : null,
@@ -59,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
             fridayNightSongByTime: fridayNightStats.songByTime ? await getSong(fridayNightStats.songByTime) : null,
             longestStreakSong: longestStreak ? longestStreak.song : null,
             longestStreak: longestStreak ? longestStreak.streak : 0,
-            songsListenedEveryDay: getSongsListenedEveryDay(listenEvents),
+            songsListenedEveryDay: songsListenedEveryDay,
             topGenres: topGenres,
         };
     }
@@ -68,10 +79,10 @@ document.addEventListener("DOMContentLoaded", () => {
         resultsContainer.innerHTML = "";
     
         if (report.mostListenedSong) {
-            resultsContainer.innerHTML += `<p>Most listened song (count): ${report.mostListenedSong.title}</p>`;
+            resultsContainer.innerHTML += `<p>Most listened song (count): ${report.mostListenedSong.artist} - ${report.mostListenedSong.title}</p>`;
         }
         if (report.mostListenedSongByTime) {
-            resultsContainer.innerHTML += `<p>Most listened song (time): ${report.mostListenedSongByTime.title}</p>`;
+            resultsContainer.innerHTML += `<p>Most listened song (time): ${report.mostListenedSongByTime.artist} - ${report.mostListenedSongByTime.title}</p>`;
         }
         if (report.mostListenedArtist) {
             resultsContainer.innerHTML += `<p>Most listened artist (count): ${report.mostListenedArtist}</p>`;
@@ -80,16 +91,19 @@ document.addEventListener("DOMContentLoaded", () => {
             resultsContainer.innerHTML += `<p>Most listened artist (time): ${report.mostListenedArtistByTime}</p>`;
         }
         if (report.fridayNightSongByCount) {
-            resultsContainer.innerHTML += `<p>Most listened song on Friday night (count): ${report.fridayNightSongByCount.title}</p>`;
+            resultsContainer.innerHTML += `<p>Most listened song on Friday night (count): ${report.fridayNightSongByCount.artist} - ${report.fridayNightSongByCount.title}</p>`;
         }
         if (report.fridayNightSongByTime) {
-            resultsContainer.innerHTML += `<p>Most listened song on Friday night (time): ${report.fridayNightSongByTime.title}</p>`;
+            resultsContainer.innerHTML += `<p>Most listened song on Friday night (time): ${report.fridayNightSongByTime.artist} - ${report.fridayNightSongByTime.title}</p>`;
         }
         if (report.longestStreakSong) {
-            resultsContainer.innerHTML += `<p>Longest streak song: ${report.longestStreakSong.title} - ${report.longestStreak} times in a row.</p>`;
+            resultsContainer.innerHTML += `<p>Longest streak song: ${report.longestStreakSong.artist} - ${report.longestStreakSong.title} - ${report.longestStreak} times in a row.</p>`;
         }
         if (report.songsListenedEveryDay.length !== 0) {
-            resultsContainer.innerHTML += `<p>Songs listened to every day: ${report.songsListenedEveryDay.join(", ")}</p>`;
+            const songsList = report.songsListenedEveryDay
+                .map(song => `${song.artist} - ${song.title}`)
+                .join(", ");
+            resultsContainer.innerHTML += `<p>Songs listened to every day: ${songsList}</p>`;
         }
         if (report.topGenres.length > 0) {
             const topGenresText = report.topGenres.length === 1 ? "Top genre" : `Top ${report.topGenres.length} genres`;
