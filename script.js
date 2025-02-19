@@ -1,5 +1,6 @@
 import { getUserIDs, getListenEvents, getSong } from "./data.js";
-import { getSongCounts, getArtistCounts, getMostPlayed, getFridayNightSongStats, getLongestStreakSong,getSongsListenedEveryDay,getTopGenresByListenCount } from "./reportUtils.js";
+import { getSongCounts, getArtistCounts, getMostPlayed, getFridayNightSongStats, getLongestStreakSong,
+         getSongsListenedEveryDay,getTopGenresByListenCount } from "./reportUtils.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     const userSelect = document.getElementById("userDropdown");
@@ -32,10 +33,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const report = await generateReport(listenEvents);
             displayResults(report);
         } catch (error) {
-            console.error("Error fetching data:", error);
             resultsContainer.innerHTML = "<p>Error fetching data. Please try again later.</p>";
         }
-        
     });
 
     async function generateReport(listenEvents) {

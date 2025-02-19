@@ -50,6 +50,7 @@ export function getFridayNightSongStats(listenEvents) {
     if (fridayNightEvents.length === 0) return { songByCount: null, songByTime: null };
 
     const songCounts = getSongCounts(fridayNightEvents);
+    
     const songByCount = getMostPlayed(songCounts, "count");
     
     const songByTime = getMostPlayed(songCounts, "duration");
