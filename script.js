@@ -72,8 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
             songsListenedEveryDay: songsListenedEveryDay,
             topGenres: topGenres,
         };
-    }
-    
+    } 
     
     function displayResults(report) {
         resultsContainer.innerHTML = "";
@@ -111,8 +110,5 @@ document.addEventListener("DOMContentLoaded", () => {
             const topGenresText = report.topGenres.length === 1 ? "Top genre" : `Top ${report.topGenres.length} genres`;
             resultsContainer.innerHTML += `<p>${topGenresText}: ${report.topGenres.join(", ")}</p>`;
         }
-    }
-    
-
-    
+    }   
 });
