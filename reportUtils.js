@@ -67,29 +67,30 @@ export function getLongestStreakSong(listenEvents) {
     let currentSongID = listenEvents[0].song_id;
 
     for (let i = 1; i < listenEvents.length; i++) {
-        if (listenEvents[i].song_id === currentSongID) {
+        const { song_id } = listenEvents[i];
+
+        if (song_id === currentSongID) {
             currentStreak++;
         } else {
-            if (currentStreak > maxStreak) {
-                maxStreak = currentStreak;
-                longestSongs = [currentSongID]; 
-            } else if (currentStreak === maxStreak) {
-                longestSongs.push(currentSongID); 
-            }
-            currentSongID = listenEvents[i].song_id;
+            updateLongestSongs(currentStreak, currentSongID);
+            currentSongID = song_id;
             currentStreak = 1;
         }
     }
 
-    if (currentStreak > maxStreak) {
-        maxStreak = currentStreak;
-        longestSongs = [currentSongID];
-    } else if (currentStreak === maxStreak) {
-        longestSongs.push(currentSongID);
-    }
+    updateLongestSongs(currentStreak, currentSongID);
 
-    const songs = longestSongs.map(songID => getSong(songID)); 
+    const songs = longestSongs.map(songID => getSong(songID));
     return { songs, streak: maxStreak };
+
+    function updateLongestSongs(streak, songID) {
+        if (streak > maxStreak) {
+            maxStreak = streak;
+            longestSongs = [songID];
+        } else if (streak === maxStreak) {
+            longestSongs.push(songID);
+        }
+    }
 }
 
 export function getSongsListenedEveryDay(listenEvents, songsData) {
