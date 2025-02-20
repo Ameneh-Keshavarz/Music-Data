@@ -114,13 +114,13 @@ document.addEventListener("DOMContentLoaded", () => {
         const headers = ["Question", `User ${userID}`];
     
         const results = [
-            { label: "Most listened song (count)", value: report.mostListenedSong ? `${report.mostListenedSong.artist} - ${report.mostListenedSong.title}` : "N/A" },
-            { label: "Most listened song (time)", value: report.mostListenedSongByTime ? `${report.mostListenedSongByTime.artist} - ${report.mostListenedSongByTime.title}` : "N/A" },
+            { label: "Most listened song (count)", value: report.mostListenedSong ? `${report.mostListenedSong.artist} - ${report.mostListenedSong.title}` : null },
+            { label: "Most listened song (time)", value: report.mostListenedSongByTime ? `${report.mostListenedSongByTime.artist} - ${report.mostListenedSongByTime.title}` : null },
             { label: "Most listened artist (count)", value: report.mostListenedArtist || "N/A" },
             { label: "Most listened artist (time)", value: report.mostListenedArtistByTime || "N/A" },
             { label: "Friday night song (count)", value: report.fridayNightSongByCount ? `${report.fridayNightSongByCount.artist} - ${report.fridayNightSongByCount.title}` : null },
             { label: "Friday night song (time)", value: report.fridayNightSongByTime ? `${report.fridayNightSongByTime.artist} - ${report.fridayNightSongByTime.title}` : null },
-            { label: "Longest streak song", value: report.longestStreakSong ? `${report.longestStreakSong[0].artist} - ${report.longestStreakSong[0].title} - ${report.longestStreak} times in a row.` : "N/A" },
+            { label: "Longest streak song", value: report.longestStreakSong ? `${report.longestStreakSong[0].artist} - ${report.longestStreakSong[0].title} - ${report.longestStreak} times in a row.` : null },
             { label: "Every day songs", value: report.songsListenedEveryDay.length > 0 ? report.songsListenedEveryDay.map(song => `${song.artist} - ${song.title}`).join(", ") : null },
             { label: "Top genres", value: report.topGenres.length > 0 ? report.topGenres.join(", ") : "N/A" }
         ];
