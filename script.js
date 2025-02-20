@@ -41,15 +41,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const songCounts = getSongCounts(listenEvents);
         const artistCounts =  await getArtistCounts(listenEvents);
     
-        const songsData = {};
-    
-        for (const event of listenEvents) {
-            const song =  getSong(event.song_id);
-            if (song) {
-                songsData[song.id] = song;
-            }
-        }
-    
         const mostListenedSongID = getMostPlayed(songCounts, "count");
         const mostListenedSongByTimeID = getMostPlayed(songCounts, "duration");
         const mostListenedArtistID =  getMostPlayed(artistCounts, "count");
@@ -57,7 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
         const fridayNightStats = getFridayNightSongStats(listenEvents);
         const longestStreak = getLongestStreakSong(listenEvents); 
-        const songsListenedEveryDay = getSongsListenedEveryDay(listenEvents, songsData);
+        const songsListenedEveryDay = getSongsListenedEveryDay(listenEvents);
         const topGenres = getTopGenresByListenCount(listenEvents);
     
         return {

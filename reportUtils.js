@@ -93,7 +93,7 @@ export function getLongestStreakSong(listenEvents) {
     }
 }
 
-export function getSongsListenedEveryDay(listenEvents, songsData) {
+export function getSongsListenedEveryDay(listenEvents) {
     if (listenEvents.length === 0) return [];
 
     listenEvents.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
@@ -116,7 +116,7 @@ export function getSongsListenedEveryDay(listenEvents, songsData) {
     const songsListenedEveryDay = Object.keys(songDays)
         .filter(songID => songDays[songID].size === daysCount)
         .map(songID => {
-            const song = songsData[songID];
+            const song = getSong(songID);
             return {
                 title: song.title,
                 artist: song.artist,
