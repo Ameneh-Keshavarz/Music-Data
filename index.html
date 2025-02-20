@@ -3,15 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Music Data Analysis platform for users to select and analyze music data.">
+    <meta name="author" content="Ameneh">
     <title>Music Data Analysis</title>
     <script type="module" src="script.js" defer></script>
 </head>
 <body>
-    <h1>Music Data Analysis</h1>
-    <label for="userDropdown">Select a User:</label>
-    <select id="userDropdown">
-        <option value="">-- Select a User --</option>
-    </select>
-    <div id="results"></div>
+    <header>
+        <h1>Music Data Analysis</h1>
+    </header>
+    <main>
+        <section>
+            <label for="userDropdown">Select a User:</label>
+            <select id="userDropdown" aria-label="Select a user to analyze music data">
+                <option value="" disabled selected>-- Select a User --</option>
+            </select>
+        </section>
+        <br><br>
+        <section id="results">
+        </section>
+    </main>
 </body>
 </html>

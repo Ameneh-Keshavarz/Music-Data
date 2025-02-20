@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             const report = await generateReport(listenEvents);
-            displayResults(report);
+            displayResults(report,userID);
         } catch (error) {
             resultsContainer.innerHTML = "<p>Error fetching data. Please try again later.</p>";
         }
@@ -72,47 +72,65 @@ document.addEventListener("DOMContentLoaded", () => {
             songsListenedEveryDay: songsListenedEveryDay,
             topGenres: topGenres,
         };
+    } 
+
+    function createTableRow(label, value) {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${label}</td>
+            <td>${value}</td>
+        `;
+        return row;
     }
     
+    function createTable(headers, rows) {
+        const table = document.createElement("table");
+        table.setAttribute("border", "1"); 
     
-    function displayResults(report) {
+        const thead = document.createElement("thead");
+        const headerRow = document.createElement("tr");
+    
+        headers.forEach(header => {
+            const th = document.createElement("th");
+            th.textContent = header;
+            headerRow.appendChild(th);
+        });
+    
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+    
+        const tbody = document.createElement("tbody");
+        rows.forEach(row => {
+            tbody.appendChild(row);
+        });
+    
+        table.appendChild(tbody);
+        return table;
+    }
+    
+    function displayResults(report, userID) {
         resultsContainer.innerHTML = "";
     
-        if (report.mostListenedSong) {
-            resultsContainer.innerHTML += `<p>Most listened song (count): ${report.mostListenedSong.artist} - ${report.mostListenedSong.title}</p>`;
-        }
-        if (report.mostListenedSongByTime) {
-            resultsContainer.innerHTML += `<p>Most listened song (time): ${report.mostListenedSongByTime.artist} - ${report.mostListenedSongByTime.title}</p>`;
-        }
-        if (report.mostListenedArtist) {
-            resultsContainer.innerHTML += `<p>Most listened artist (count): ${report.mostListenedArtist}</p>`;
-        }
-        if (report.mostListenedArtistByTime) {
-            resultsContainer.innerHTML += `<p>Most listened artist (time): ${report.mostListenedArtistByTime}</p>`;
-        }
-        if (report.fridayNightSongByCount) {
-            resultsContainer.innerHTML += `<p>Most listened song on Friday night (count): ${report.fridayNightSongByCount.artist} - ${report.fridayNightSongByCount.title}</p>`;
-        }
-        if (report.fridayNightSongByTime) {
-            resultsContainer.innerHTML += `<p>Most listened song on Friday night (time): ${report.fridayNightSongByTime.artist} - ${report.fridayNightSongByTime.title}</p>`;
-        }
+        const headers = ["Question", `User ${userID}`];
     
-        if (report.longestStreakSong) {
-            resultsContainer.innerHTML += `<p>Longest streak song: ${report.longestStreakSong[0].artist} - ${report.longestStreakSong[0].title} - ${report.longestStreak} times in a row.</p>`;
-        }
+        const results = [
+            { label: "Most listened song (count)", value: report.mostListenedSong ? `${report.mostListenedSong.artist} - ${report.mostListenedSong.title}` : "N/A" },
+            { label: "Most listened song (time)", value: report.mostListenedSongByTime ? `${report.mostListenedSongByTime.artist} - ${report.mostListenedSongByTime.title}` : "N/A" },
+            { label: "Most listened artist (count)", value: report.mostListenedArtist || "N/A" },
+            { label: "Most listened artist (time)", value: report.mostListenedArtistByTime || "N/A" },
+            { label: "Friday night song (count)", value: report.fridayNightSongByCount ? `${report.fridayNightSongByCount.artist} - ${report.fridayNightSongByCount.title}` : null },
+            { label: "Friday night song (time)", value: report.fridayNightSongByTime ? `${report.fridayNightSongByTime.artist} - ${report.fridayNightSongByTime.title}` : null },
+            { label: "Longest streak song", value: report.longestStreakSong ? `${report.longestStreakSong[0].artist} - ${report.longestStreakSong[0].title} - ${report.longestStreak} times in a row.` : "N/A" },
+            { label: "Every day songs", value: report.songsListenedEveryDay.length > 0 ? report.songsListenedEveryDay.map(song => `${song.artist} - ${song.title}`).join(", ") : null },
+            { label: "Top genres", value: report.topGenres.length > 0 ? report.topGenres.join(", ") : "N/A" }
+        ];
     
-        if (report.songsListenedEveryDay.length !== 0) {
-            const songsList = report.songsListenedEveryDay
-                .map(song => `${song.artist} - ${song.title}`)
-                .join(", ");
-            resultsContainer.innerHTML += `<p>Songs listened to every day: ${songsList}</p>`;
-        }
-        if (report.topGenres.length > 0) {
-            const topGenresText = report.topGenres.length === 1 ? "Top genre" : `Top ${report.topGenres.length} genres`;
-            resultsContainer.innerHTML += `<p>${topGenresText}: ${report.topGenres.join(", ")}</p>`;
-        }
-    }
+        const rows = results
+            .filter(item => item.value !== null)
+            .map(item => createTableRow(item.label, item.value));
     
-
+        const table = createTable(headers, rows);
     
+        resultsContainer.appendChild(table);
+    }       
 });
